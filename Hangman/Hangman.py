@@ -18,6 +18,7 @@ class Hangman:
         self.guess_id = None
         self.word = random.choice(words)
         self.count = 0
+        self.buttons = {}  # Dictionary to hold button references
         self.initialize_game()
 
     def create_circle(self, x, y, r):
@@ -40,9 +41,11 @@ class Hangman:
         if self.count < 6:
             if letter in self.word:
                 self.change_status(letter)
+                self.buttons[letter.upper()].config(bg='green')
                 if ''.join(self.guess) == self.word:
                     self.canvas.create_text(250, 100, text="You guessed the word!", fill="Green", font=("Purisa", 25))
             else:
+                self.buttons[letter.upper()].config(bg='red')
                 self.add_line_to_hangman()
                 if self.count == 6:
                     self.canvas.create_text(250, 100, text="Game Over", fill="Red", font=("Purisa", 25))
@@ -53,9 +56,11 @@ class Hangman:
         button_height = 30
         button_y = 450
         # Create buttons for A-Z
-        for index, letter in enumerate(range(65, 91)):
-            btn = tk.Button(self.master, text=chr(letter), width=button_width // 6, height=button_height // 15,
-                            command=lambda l=chr(letter): self.check_guess(l.lower()))
+        for index, letter in enumerate(range(65, 91)):  # ASCII values for A-Z
+            letter_char = chr(letter)
+            btn = tk.Button(self.master, text=letter_char, width=button_width // 6, height=button_height // 15,
+                            command=lambda l=letter_char: self.check_guess(l.lower()))
+            self.buttons[letter_char] = btn  # Store the button reference
             # Calculate row and column for positioning
             row = index // buttons_per_row
             column = index % buttons_per_row
